@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -12,15 +12,35 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--card);z-index:10}
-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;padding:8px 12px;background:var(--card);border-bottom:1px solid var(--bd)}
-.brand{font:700 15px ui-monospace,monospace;letter-spacing:.08em}.brand span{color:var(--ac)}
-.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
+#top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--card);border-bottom:1px solid var(--bd)}
+.bar{display:flex;gap:6px;align-items:center;padding:6px 10px}
+.brand{flex:1;font:700 14px ui-monospace,monospace;letter-spacing:.08em;white-space:nowrap}.brand span{color:var(--ac)}
 button,label.btn,select{font:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--fg);cursor:pointer}
-label.btn{background:var(--ac);color:#fff;border-color:var(--ac)}
-#name{flex:1;min-width:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--mut);font-size:12px}
+label.btn,button.p{background:var(--ac);color:#fff;border-color:var(--ac);text-align:center}
+#tabs{display:none;overflow-x:auto;background:var(--code);scrollbar-width:none}
+.tab{display:flex;align-items:center;gap:6px;padding:7px 6px 7px 10px;border-right:1px solid var(--bd);border-bottom:2px solid transparent;white-space:nowrap;font-size:13px;cursor:pointer;color:var(--mut);max-width:210px;flex:none}
+.tab span,.it span{overflow:hidden;text-overflow:ellipsis}
+.tab.on{background:var(--bg);color:var(--fg);border-bottom-color:var(--ac)}
+.tab i,.it i{font:700 9px ui-monospace,monospace;font-style:normal;padding:1px 4px;border-radius:4px;background:var(--bd);color:var(--fg)}
+.tab b,.it b{width:22px;height:22px;line-height:20px;text-align:center;border-radius:5px;font-weight:400;flex:none}
+.tab b:hover,.it b:hover{background:var(--bd)}
+#wrap{display:flex;align-items:flex-start}
+#content{flex:1;min-width:0}
+#sb{display:none;width:270px;flex:none;position:sticky;top:var(--hh,90px);height:calc(100vh - var(--hh,90px));overflow-y:auto;background:var(--card);border-right:1px solid var(--bd);padding:8px}
+#sb.on{display:block}
+#bd{display:none;position:fixed;left:0;right:0;bottom:0;top:var(--hh,90px);background:#0006;z-index:7}
+#bd.on{display:block}
+@media (max-width:899px){#sb{position:fixed;left:0;top:var(--hh,90px);bottom:0;height:auto;z-index:8;width:min(82vw,300px);box-shadow:4px 0 20px #0005}}
+@media (min-width:900px){#bd{display:none!important}}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:6px}.sg>*{text-align:center}.sg .w{grid-column:1/3}
+.sh{display:flex;justify-content:space-between;align-items:center;font:700 11px system-ui;letter-spacing:.08em;color:var(--mut);margin:14px 6px 6px}
+.sh button{font-size:11px;padding:2px 6px}
+.it{display:flex;align-items:center;gap:6px;padding:5px 6px;border-radius:7px;cursor:pointer;font-size:13px}
+.it:hover,.it.on{background:var(--code)}.it span{flex:1;white-space:nowrap}.it small{color:var(--mut);font-size:10px}
+.none{color:var(--mut);font-size:12px;padding:4px 6px}
 main{max-width:760px;margin:0 auto;padding:18px 16px 60px}main.wide{max-width:1100px}
-#paste{display:none;margin:0 auto;max-width:760px;padding:12px 16px 0}
-#paste textarea{width:100%;height:160px;padding:10px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--fg);font:13px/1.5 ui-monospace,monospace}
+#paste{display:none;max-width:760px;margin:0 auto;padding:12px 16px 0}
+#paste textarea{width:100%;height:150px;margin:6px 0;padding:10px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--fg);font:13px/1.5 ui-monospace,monospace}
 #empty{text-align:center;color:var(--mut);padding:50px 10px}
 #out{overflow-wrap:anywhere}
 #out h1,#out h2{border-bottom:1px solid var(--bd);padding-bottom:.25em}
@@ -42,63 +62,146 @@ main{max-width:760px;margin:0 auto;padding:18px 16px 60px}main.wide{max-width:11
 #tools input{flex:1;min-width:120px;padding:7px 10px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--fg);font:inherit;font-size:14px}
 #tools .m{color:var(--mut);font-size:12px}
 .jt{font:13px/1.55 ui-monospace,monospace}.jt .in{margin-left:1.1em;border-left:1px dotted var(--bd);padding-left:.7em}
-.jt summary{cursor:pointer}.jt .k{color:var(--ac)}.jt .s{color:var(--s)}.jt .n{color:var(--n)}.jt .b{color:var(--b)}.jt .z{color:var(--mut)}.jt .m{color:var(--mut);font-size:11px}
+.jt summary{cursor:pointer}.jt .k{color:var(--ac)}.jt .s{color:var(--s)}.jt .n{color:var(--n)}.jt .b{color:var(--b)}.jt .z,.jt .m{color:var(--mut)}.jt .m{font-size:11px}
 #frw{display:none}
-#hbar{padding:6px 12px;display:flex;gap:6px;align-items:center;border-bottom:1px solid var(--bd)}
+#hbar{padding:6px 12px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--bd);color:var(--mut);font-size:12px}
 #fr{display:block;width:100%;border:0;background:#fff}
 #src{display:none;margin:0;padding:12px;overflow:auto;font:12px/1.5 ui-monospace,monospace;background:var(--code)}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:13px;z-index:20;display:none}
 </style>
 </head>
 <body>
-<header>
+<div id="top">
+<div class="bar">
+<button data-a="menu" aria-label="Sidebar">☰</button>
 <div class="brand">HIKARI <span>./VIEWER</span></div>
-<div class="row">
-<label class="btn" for="f">Buka file</label>
-<input id="f" type="file" multiple hidden>
-<label class="btn" for="fd">Folder</label>
-<input id="fd" type="file" webkitdirectory multiple hidden>
-<button data-a="paste">Tempel</button>
-<select id="sel" hidden></select>
-<button id="th" data-a="theme">◐ Auto</button>
 <button data-a="f-">A−</button><button data-a="f+">A+</button>
-<span id="name"></span>
+<button id="th" data-a="theme">◐ Auto</button>
 </div>
-</header>
-<div id="paste"><div class="row"><select id="pt"><option value="md">Markdown</option><option value="csv">CSV</option><option value="json">JSON</option><option value="html">HTML</option></select></div><textarea id="ta" placeholder="Tempel teks di sini"></textarea></div>
+<div id="tabs"></div>
+</div>
+<div id="bd" data-a="menu"></div>
+<div id="wrap">
+<aside id="sb">
+<div class="sg">
+<label class="btn" for="f">Open file</label>
+<label class="btn" for="fd">Open folder</label>
+<button class="w" data-a="paste">Paste text</button>
+</div>
+<input id="f" type="file" multiple hidden>
+<input id="fd" type="file" webkitdirectory multiple hidden>
+<div id="sOpen"></div>
+<div class="sh"><span>HISTORY</span><button data-a="clear">Clear</button></div>
+<div id="sHist"></div>
+</aside>
+<div id="content">
+<div id="paste"><select id="pt"><option value="md">Markdown</option><option value="csv">CSV</option><option value="json">JSON</option><option value="html">HTML</option></select><textarea id="ta" placeholder="Paste text here"></textarea><button class="p" data-a="pasteok">Open</button></div>
 <main>
-<div id="empty">Tekan <b>Buka file</b> dan pilih file <b>.md .csv .json .html</b>.<br>Untuk lampiran (gambar, css, js), pilih bersamaan dalam satu kali pilih.<br>Semua dibaca lokal di browser dan tidak diunggah.</div>
+<div id="empty">Tap <b>☰</b> then <b>Open file</b> to view .md .csv .json .html files.<br>To show attachments (images, css, js), select them together with the document.<br>Opened files are saved in this browser, so reloading brings them back.<br>Nothing is uploaded anywhere.</div>
 <div id="tools"></div>
 <article id="out"></article>
 </main>
-<div id="frw"><div id="hbar"><button data-a="src">Lihat kode</button><span class="m" style="color:var(--mut);font-size:12px">Dijalankan di sandbox</span></div><iframe id="fr" sandbox="allow-scripts allow-forms allow-popups allow-modals"></iframe><pre id="src"></pre></div>
+<div id="frw"><div id="hbar"><button data-a="src">View source</button><span>Running in a sandbox</span></div><iframe id="fr" sandbox="allow-scripts allow-forms allow-popups allow-modals"></iframe><pre id="src"></pre></div>
+</div>
+</div>
+<div id="toast"></div>
 <script>
-const $=s=>document.querySelector(s);
+const $=s=>document.querySelector(s),R=document.documentElement;
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const EXT={md:'md',markdown:'md',txt:'md',csv:'csv',tsv:'csv',json:'json',html:'html',htm:'html'};
+const IMG=/^(png|jpe?g|gif|webp|svg|bmp|avif)$/;
 const ext=n=>(n.split('.').pop()||'').toLowerCase();
 const base=p=>{let s=String(p).split(/[?#]/)[0];try{s=decodeURIComponent(s)}catch(e){}return s.split(/[\\/]/).pop().toLowerCase()};
-let docs=[],att=Object.create(null),cur=null,fs=16;
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const safe=p=>p.catch(()=>{});
 const rd=(f,u)=>new Promise(r=>{const x=new FileReader();x.onload=()=>r(String(x.result));u?x.readAsDataURL(f):x.readAsText(f)});
-async function load(files){
-  docs=[];att=Object.create(null);
+function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',2600)}
+/* storage */
+let db;
+const idb=()=>new Promise((res,rej)=>{if(db)return res(db);const r=indexedDB.open('hikari-viewer',1);r.onupgradeneeded=()=>{r.result.createObjectStore('docs',{keyPath:'id'});r.result.createObjectStore('sets',{keyPath:'id'})};r.onsuccess=()=>{db=r.result;res(db)};r.onerror=()=>rej(r.error)});
+const tx=(s,m,f)=>idb().then(d=>new Promise((res,rej)=>{const t=d.transaction(s,m),q=f(t.objectStore(s));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error)}));
+const put=(s,v)=>tx(s,'readwrite',o=>o.put(v)),getA=s=>tx(s,'readonly',o=>o.getAll()),getK=(s,k)=>tx(s,'readonly',o=>o.get(k)),del=(s,k)=>tx(s,'readwrite',o=>o.delete(k));
+/* state */
+let hist=[],open=[],active=null,att=Object.create(null),sbOpen=false,fs=16,th='auto',restoreY=0;const setCache={};
+const byId=id=>hist.find(d=>d.id===id);
+function saveState(){try{localStorage.setItem('hv-state',JSON.stringify({open,active,sb:sbOpen,fs,th,y:scrollY}))}catch(e){}}
+async function loadSet(id){
+  if(!id)return Object.create(null);
+  if(!setCache[id]){const r=await safe(getK('sets',id));setCache[id]=Object.assign(Object.create(null),r&&r.att)}
+  return setCache[id];
+}
+async function prune(){
+  hist.sort((a,b)=>b.time-a.time);
+  while(hist.length>60){const d=hist.pop();open=open.filter(x=>x!==d.id);safe(del('docs',d.id))}
+  const used=new Set(hist.map(d=>d.setId));
+  for(const s of (await safe(getA('sets')))||[])if(!used.has(s.id)){safe(del('sets',s.id));delete setCache[s.id]}
+}
+async function commit(ds,a){
+  const sid=Object.keys(a).length?uid():null;
+  if(sid){setCache[sid]=a;safe(put('sets',{id:sid,att:{...a}}))}
+  let first;
+  for(const d of ds){
+    const old=hist.find(h=>h.name===d.name);
+    const rec={id:old?old.id:uid(),name:d.name,type:d.type,text:d.text,size:d.text.length,time:Date.now(),setId:sid||(old&&old.setId)||null};
+    if(old)hist.splice(hist.indexOf(old),1);
+    hist.unshift(rec);safe(put('docs',rec));first=first||rec.id;
+  }
+  await prune();
+  await show(first);
+}
+async function addFiles(files){
+  const a=Object.create(null),ds=[];
   for(const f of files){
     const e=ext(f.name),n=f.name.toLowerCase();
-    if(EXT[e])docs.push({name:f.name,type:EXT[e],text:await rd(f)});
-    else if(/^(png|jpe?g|gif|webp|svg|bmp|avif)$/.test(e))att[n]=await rd(f,1);
-    else if(e==='css'||e==='js')att[n]=await rd(f);
-    else att[n]='';
+    if(EXT[e])ds.push({name:f.name,type:EXT[e],text:await rd(f)});
+    else if(IMG.test(e))a[n]=await rd(f,1);
+    else if(e==='css'||e==='js')a[n]=await rd(f);
+    else a[n]='';
   }
-  const s=$('#sel');
-  s.innerHTML=docs.map((d,i)=>'<option value="'+i+'">'+esc(d.name)+'</option>').join('');
-  s.hidden=docs.length<2;
-  if(docs.length)show(docs[0]);else{$('#name').textContent='Tidak ada file yang didukung'}
+  if(!ds.length)return toast('No supported file (md, csv, json, html)');
+  if(innerWidth<900)setSb(false);
+  await commit(ds,a);
+}
+/* UI */
+const ago=t=>new Date(t).toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
+const kb=n=>n<1024?n+' B':(n/1024).toFixed(n<10240?1:0)+' KB';
+function setHH(){R.style.setProperty('--hh',((parseInt(getComputedStyle(R).paddingTop)||0)+$('#top').offsetHeight)+'px')}
+function refresh(){
+  const T=$('#tabs');
+  T.style.display=open.length?'flex':'none';
+  T.innerHTML=open.map(id=>{const d=byId(id);return '<div class="tab'+(id===active?' on':'')+'" data-a="tab" data-id="'+id+'"><i>'+d.type.toUpperCase()+'</i><span>'+esc(d.name)+'</span><b data-a="close" data-id="'+id+'" aria-label="Close tab">×</b></div>'}).join('');
+  const on=T.querySelector('.on');if(on)on.scrollIntoView({block:'nearest',inline:'nearest'});
+  $('#sOpen').innerHTML=open.length?'<div class="sh"><span>OPEN FILES</span></div>'+open.map(id=>{const d=byId(id);return '<div class="it'+(id===active?' on':'')+'" data-a="tab" data-id="'+id+'"><i>'+d.type.toUpperCase()+'</i><span>'+esc(d.name)+'</span><b data-a="close" data-id="'+id+'">×</b></div>'}).join(''):'';
+  $('#sHist').innerHTML=hist.length?hist.map(d=>'<div class="it" data-a="tab" data-id="'+d.id+'"><i>'+d.type.toUpperCase()+'</i><span>'+esc(d.name)+'</span><small>'+ago(d.time)+' · '+kb(d.size)+'</small><b data-a="del" data-id="'+d.id+'" aria-label="Remove from history">×</b></div>').join(''):'<div class="none">No files yet</div>';
+  setHH();saveState();
+}
+function clearView(){
+  $('#frw').style.display='none';$('main').style.display='';$('main').className='';
+  $('#empty').style.display='';$('#tools').innerHTML='';$('#out').innerHTML='';
+}
+function closeTab(id){
+  const i=open.indexOf(id);if(i<0)return;
+  open.splice(i,1);
+  if(active!==id)return refresh();
+  active=open[i]||open[i-1]||null;
+  if(active)show(active);else{clearView();refresh()}
+}
+function delDoc(id){
+  const d=byId(id);if(!d)return;
+  hist.splice(hist.indexOf(d),1);safe(del('docs',id));
+  if(d.setId&&!hist.some(h=>h.setId===d.setId)){safe(del('sets',d.setId));delete setCache[d.setId]}
+  if(open.includes(id))closeTab(id);else refresh();
+}
+function setSb(v){sbOpen=v;$('#sb').classList.toggle('on',v);$('#bd').classList.toggle('on',v);saveState()}
+function applyTh(){
+  if(th==='auto')R.removeAttribute('data-theme');else R.setAttribute('data-theme',th);
+  $('#th').textContent={auto:'◐ Auto',light:'☀ Light',dark:'☾ Dark'}[th];saveState();
 }
 /* markdown */
 function img(u,alt){
-  if(/^data:image\//i.test(u))return '<img src="'+u+'" alt="'+alt+'">';
-  if(/^https?:/i.test(u))return '<img src="'+u.replace(/"/g,'%22')+'" alt="'+alt+'" loading="lazy" referrerpolicy="no-referrer">';
+  if(/^data:image\//i.test(u)||/^https?:/i.test(u))return '<img src="'+u.replace(/"/g,'%22')+'" alt="'+alt+'" loading="lazy" referrerpolicy="no-referrer">';
   const n=base(u),a=att[n];
-  return a&&a.startsWith('data:')?'<img src="'+a+'" alt="'+alt+'">':'<em>[lampiran tidak ditemukan: '+n+', pilih bersama file .md]</em>';
+  return a&&a.startsWith('data:')?'<img src="'+a+'" alt="'+alt+'">':'<em>[attachment not found: '+n+' (select it together with the document)]</em>';
 }
 function inline(t){
   const codes=[],st=[];
@@ -174,9 +277,9 @@ function parseCSV(t){
 }
 function csv(d){
   const rows=parseCSV(d.text),MAX=3000;
-  if(!rows.length){$('#out').innerHTML='<p>CSV kosong.</p>';return}
+  if(!rows.length){$('#out').innerHTML='<p>Empty CSV.</p>';return}
   const h=rows[0],b=rows.slice(1,MAX+1);
-  $('#tools').innerHTML='<input id="flt" placeholder="Cari di tabel"><span class="m">'+(rows.length-1)+' baris × '+h.length+' kolom'+(rows.length-1>MAX?' (tampil '+MAX+' pertama)':'')+'</span>';
+  $('#tools').innerHTML='<input id="flt" placeholder="Search table"><span class="m">'+(rows.length-1)+' rows × '+h.length+' cols'+(rows.length-1>MAX?' (showing first '+MAX+')':'')+'</span>';
   $('#out').innerHTML='<div class="tw"><table><thead><tr>'+h.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr></thead><tbody>'+b.map(r=>'<tr>'+h.map((_,i)=>'<td>'+esc(r[i]||'')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
 }
 /* json */
@@ -186,15 +289,15 @@ function jt(v,k,dp){
   if(typeof v==='object'){
     const a=Array.isArray(v),ks=Object.keys(v),br=a?'[]':'{}';
     if(!ks.length)return '<div>'+key+br+'</div>';
-    return '<details'+(dp<2?' open':'')+'><summary>'+key+br[0]+' <span class="m">'+ks.length+(a?' item':' key')+'</span></summary><div class="in">'+ks.map(x=>jt(v[x],x,dp+1)).join('')+'</div>'+br[1]+'</details>';
+    return '<details'+(dp<2?' open':'')+'><summary>'+key+br[0]+' <span class="m">'+ks.length+(a?' items':' keys')+'</span></summary><div class="in">'+ks.map(x=>jt(v[x],x,dp+1)).join('')+'</div>'+br[1]+'</details>';
   }
   const c=typeof v==='string'?'s':typeof v==='number'?'n':'b';
   return '<div>'+key+'<span class="'+c+'">'+esc(typeof v==='string'?JSON.stringify(v):String(v))+'</span></div>';
 }
 function json(d){
-  $('#tools').innerHTML='<button data-a="jo">Buka semua</button><button data-a="jc">Tutup semua</button>';
+  $('#tools').innerHTML='<button data-a="jo">Expand all</button><button data-a="jc">Collapse all</button>';
   try{$('#out').innerHTML='<div class="jt">'+jt(JSON.parse(d.text.replace(/^\uFEFF/,'')),undefined,0)+'</div>'}
-  catch(e){$('#out').innerHTML='<p><b>JSON tidak valid:</b> '+esc(e.message)+'</p><pre><code>'+esc(d.text)+'</code></pre>'}
+  catch(e){$('#out').innerHTML='<p><b>Invalid JSON:</b> '+esc(e.message)+'</p><pre><code>'+esc(d.text)+'</code></pre>'}
 }
 /* html */
 function buildHTML(t){
@@ -204,52 +307,67 @@ function buildHTML(t){
   doc.querySelectorAll('script[src]').forEach(e=>{const a=att[base(e.getAttribute('src'))];if(a!==undefined&&!a.startsWith('data:')){const s=doc.createElement('script');s.textContent=a;e.replaceWith(s)}});
   return '<!DOCTYPE html>'+doc.documentElement.outerHTML;
 }
-function sizeFr(){const h=innerHeight-$('header').offsetHeight-$('#hbar').offsetHeight-(parseInt(getComputedStyle(document.documentElement).paddingTop)||0);$('#fr').style.height=Math.max(300,h)+'px'}
+function sizeFr(){$('#fr').style.height=Math.max(300,innerHeight-(parseInt(getComputedStyle(R).getPropertyValue('--hh'))||0)-$('#hbar').offsetHeight)+'px'}
 function html(d){
   $('main').style.display='none';$('#frw').style.display='block';
   $('#fr').style.display='block';$('#src').style.display='none';
+  $('#hbar button').textContent='View source';
   $('#fr').srcdoc=buildHTML(d.text);$('#src').textContent=d.text;sizeFr();
 }
-/* shell */
-function show(d){
-  cur=d;
-  const m=$('main');
-  $('#frw').style.display='none';m.style.display='';
+async function show(id){
+  const d=byId(id);if(!d)return;
+  active=id;if(!open.includes(id))open.push(id);
+  att=await loadSet(d.setId);
+  if(active!==id)return;
+  refresh();
+  $('#frw').style.display='none';$('main').style.display='';
   $('#empty').style.display='none';$('#tools').innerHTML='';
-  m.className=d.type==='md'?'':'wide';
+  $('main').className=d.type==='md'?'':'wide';
   if(d.type==='md')$('#out').innerHTML=md(d.text);
   else if(d.type==='csv')csv(d);
   else if(d.type==='json')json(d);
   else html(d);
-  $('#name').textContent=d.name;scrollTo(0,0);
+  scrollTo(0,restoreY);restoreY=0;
 }
-const R=document.documentElement;let th='auto';
-try{th=localStorage.getItem('hv-th')||'auto'}catch(e){}
-function applyTh(){
-  if(th==='auto')R.removeAttribute('data-theme');else R.setAttribute('data-theme',th);
-  $('#th').textContent={auto:'◐ Auto',light:'☀ Terang',dark:'☾ Gelap'}[th];
-  try{localStorage.setItem('hv-th',th)}catch(e){}
-}
-applyTh();
+/* events */
 document.addEventListener('click',e=>{
   const a=e.target.closest('[data-a]');if(!a)return;
-  const k=a.dataset.a;
-  if(k==='theme'){th={auto:'light',light:'dark',dark:'auto'}[th];applyTh()}
-  else if(k==='paste'){const p=$('#paste');p.style.display=p.style.display==='block'?'none':'block'}
-  else if(k==='f-'||k==='f+'){fs=Math.max(12,Math.min(26,fs+(k==='f+'?1:-1)));document.body.style.fontSize=fs+'px'}
+  const k=a.dataset.a,id=a.dataset.id;
+  if(k==='tab'){if(innerWidth<900)setSb(false);show(id)}
+  else if(k==='close')closeTab(id);
+  else if(k==='del')delDoc(id);
+  else if(k==='menu')setSb(!sbOpen);
+  else if(k==='clear'){if(hist.length&&confirm('Remove all files from history?')){[...hist].forEach(d=>safe(del('docs',d.id)));hist=[];open=[];active=null;safe(getA('sets').then(s=>s.forEach(x=>del('sets',x.id))));Object.keys(setCache).forEach(x=>delete setCache[x]);clearView();refresh()}}
+  else if(k==='theme'){th={auto:'light',light:'dark',dark:'auto'}[th];applyTh()}
+  else if(k==='paste'){const p=$('#paste');p.style.display=p.style.display==='block'?'none':'block';if(innerWidth<900)setSb(false)}
+  else if(k==='pasteok'){const t=$('#ta').value,ty=$('#pt').value;if(!t.trim())return;
+    const n=hist.filter(h=>/^pasted-/.test(h.name)).length+1;$('#paste').style.display='none';$('#ta').value='';commit([{name:'pasted-'+n+'.'+ty,type:ty,text:t}],Object.create(null))}
+  else if(k==='f-'||k==='f+'){fs=Math.max(12,Math.min(26,fs+(k==='f+'?1:-1)));document.body.style.fontSize=fs+'px';saveState()}
   else if(k==='jo'||k==='jc')document.querySelectorAll('.jt details').forEach(x=>x.open=k==='jo');
-  else if(k==='src'){const s=$('#src'),f=$('#fr'),on=s.style.display==='block';s.style.display=on?'none':'block';f.style.display=on?'block':'none';a.textContent=on?'Lihat kode':'Lihat tampilan'}
+  else if(k==='src'){const s=$('#src'),f=$('#fr'),on=s.style.display==='block';s.style.display=on?'none':'block';f.style.display=on?'block':'none';a.textContent=on?'View source':'View preview'}
 });
 document.addEventListener('input',e=>{
   if(e.target.id==='flt'){const q=e.target.value.toLowerCase();document.querySelectorAll('#out tbody tr').forEach(r=>r.style.display=r.textContent.toLowerCase().includes(q)?'':'none')}
-  if(e.target.id==='ta'||e.target.id==='pt'){const t=$('#ta').value;if(t.trim())show({name:'(teks tempelan)',type:$('#pt').value,text:t})}
 });
-$('#pt').addEventListener('change',()=>{const t=$('#ta').value;if(t.trim())show({name:'(teks tempelan)',type:$('#pt').value,text:t})});
-$('#sel').addEventListener('change',e=>show(docs[+e.target.value]));
-['#f','#fd'].forEach(s=>$(s).addEventListener('change',e=>{const fl=[...e.target.files];e.target.value='';if(fl.length)load(fl)}));
+['#f','#fd'].forEach(s=>$(s).addEventListener('change',e=>{const fl=[...e.target.files];e.target.value='';if(fl.length)addFiles(fl)}));
 addEventListener('dragover',e=>e.preventDefault());
-addEventListener('drop',e=>{e.preventDefault();const fl=[...e.dataTransfer.files];if(fl.length)load(fl)});
-addEventListener('resize',()=>{if(cur&&cur.type==='html')sizeFr()});
+addEventListener('drop',e=>{e.preventDefault();const fl=[...e.dataTransfer.files];if(fl.length)addFiles(fl)});
+let sT;addEventListener('scroll',()=>{clearTimeout(sT);sT=setTimeout(saveState,300)});
+addEventListener('pagehide',saveState);
+addEventListener('resize',()=>{setHH();if(active&&byId(active)&&byId(active).type==='html')sizeFr()});
+/* restore */
+(async()=>{
+  let st={};try{st=JSON.parse(localStorage.getItem('hv-state'))||{}}catch(e){}
+  th=st.th||'auto';applyTh();
+  fs=st.fs||16;document.body.style.fontSize=fs+'px';
+  hist=(await safe(getA('docs')))||[];
+  hist.sort((a,b)=>b.time-a.time);
+  open=(st.open||[]).filter(id=>byId(id));
+  setSb(st.sb===undefined?innerWidth>=900:st.sb);
+  active=byId(st.active)?st.active:open[0]||null;
+  restoreY=st.y||0;
+  if(active)show(active);else{clearView();refresh()}
+})();
 </script>
 </body>
 </html>
