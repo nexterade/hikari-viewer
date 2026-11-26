@@ -54,8 +54,13 @@ main{max-width:760px;margin:0 auto;padding:18px 16px 60px}main.wide{max-width:11
 #out img{max-width:100%;height:auto;border-radius:6px}
 #out .att{background:var(--code);padding:.1em .5em;border-radius:6px}
 #out .tw{overflow:auto;max-height:75vh;margin:1em 0;border:1px solid var(--bd);border-radius:10px;-webkit-overflow-scrolling:touch}
-#out .tw table{border-collapse:separate;border-spacing:0;margin:0;width:max-content;min-width:100%;font-size:.92em}
-#out .tw th,#out .tw td{padding:7px 10px;border-bottom:1px solid var(--bd);text-align:left;vertical-align:top;min-width:70px;max-width:340px;overflow-wrap:anywhere}
+#out .tw table{border-collapse:separate;border-spacing:0;margin:0;width:max-content;min-width:100%;font-size:.88em;line-height:1.45}
+#out .tw th,#out .tw td{padding:6px 9px;border-bottom:1px solid var(--bd);text-align:left;vertical-align:top;min-width:56px;max-width:300px;overflow-wrap:anywhere}
+@media (max-width:600px){#out .tw table{font-size:.78em}#out .tw th,#out .tw td{padding:5px 7px;max-width:220px}}
+#out .tw:not(.cards) th:first-child,#out .tw:not(.cards) td:first-child{position:sticky;left:0;max-width:40vw;box-shadow:1px 0 0 var(--bd)}
+#out .tw:not(.cards) th:first-child{z-index:2}
+#out .tw:not(.cards) td:first-child{background:var(--bg);z-index:1}
+#out .tw:not(.cards) tbody tr:nth-child(even) td:first-child{background:var(--code)}
 #out .tw th{background:var(--code);position:sticky;top:0;z-index:1;white-space:nowrap}
 #out .tw tbody tr:nth-child(even) td{background:var(--code)}
 #out .tw tr:last-child td{border-bottom:0}
@@ -257,7 +262,7 @@ function md(src){
     if(l.includes('|')&&i+1<L.length&&/^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?\s*$/.test(L[i+1])){
       const h=cells(l),rows=[];i+=2;
       while(i<L.length&&L[i].trim()&&L[i].includes('|')){rows.push(cells(L[i]));i++}
-      o.push('<div class="tw" data-auto="'+h.length+'"><table><thead><tr>'+h.map(c=>'<th>'+inline(c)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+h.map((_,k)=>'<td data-l="'+ea(h[k])+'"><span class="v">'+inline(r[k]||'')+'</span></td>').join('')+'</tr>').join('')+'</tbody></table></div>');continue;
+      o.push('<div class="tw"><table><thead><tr>'+h.map(c=>'<th>'+inline(c)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+h.map((_,k)=>'<td data-l="'+ea(h[k])+'"><span class="v">'+inline(r[k]||'')+'</span></td>').join('')+'</tr>').join('')+'</tbody></table></div>');continue;
     }
     if(m=l.match(LI)){
       const bs=m[1].length,tag=/\d/.test(m[2])?'ol':'ul',items=[];
@@ -301,7 +306,7 @@ function csv(d){
   if(!rows.length){$('#out').innerHTML='<p>Empty CSV.</p>';return}
   const h=rows[0],b=rows.slice(1,MAX+1);
   $('#tools').innerHTML='<input id="flt" placeholder="Search table"><button id="cv" data-a="cards">Card view</button><span class="m">'+(rows.length-1)+' rows × '+h.length+' cols'+(rows.length-1>MAX?' (showing first '+MAX+')':'')+'</span>';
-  $('#out').innerHTML='<div class="tw" data-auto="'+h.length+'"><table><thead><tr>'+h.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr></thead><tbody>'+b.map(r=>'<tr>'+h.map((_,i)=>'<td data-l="'+ea(h[i])+'"><span class="v">'+esc(r[i]||'')+'</span></td>').join('')+'</tr>').join('')+'</tbody></table></div>';
+  $('#out').innerHTML='<div class="tw"><table><thead><tr>'+h.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr></thead><tbody>'+b.map(r=>'<tr>'+h.map((_,i)=>'<td data-l="'+ea(h[i])+'"><span class="v">'+esc(r[i]||'')+'</span></td>').join('')+'</tr>').join('')+'</tbody></table></div>';
 }
 /* json */
 function jt(v,k,dp){
@@ -352,7 +357,7 @@ async function show(id){
   if(d.type==='md')runMM();
 }
 /* tables, copy, diagrams */
-function adapt(){document.querySelectorAll('#out .tw[data-auto]').forEach(w=>w.classList.toggle('cards',innerWidth<=600&&+w.dataset.auto>=4))}
+function adapt(){}
 function syncCv(){const w=$('#out .tw'),b=$('#cv');if(w&&b)b.textContent=w.classList.contains('cards')?'Table view':'Card view'}
 async function copyText(t){
   try{await navigator.clipboard.writeText(t);return true}catch(e){
