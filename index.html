@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HIKARI ./VIEWER</title>
+<style>
+:root{--bg:#fafaf8;--fg:#1f2328;--mut:#6b7280;--card:#fff;--bd:#e3e3df;--ac:#2563eb;--code:#f0f0ec;--s:#0a7a3b;--n:#b45309;--b:#7c3aed;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--mut:#9aa0a6;--card:#1e2024;--bd:#33363b;--ac:#7aa7ff;--code:#26292e;--s:#7ee2a0;--n:#f5b461;--b:#c4a1ff;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--mut:#9aa0a6;--card:#1e2024;--bd:#33363b;--ac:#7aa7ff;--code:#26292e;--s:#7ee2a0;--n:#f5b461;--b:#c4a1ff;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--card);z-index:10}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;padding:8px 12px;background:var(--card);border-bottom:1px solid var(--bd)}
+.brand{font:700 15px ui-monospace,monospace;letter-spacing:.08em}.brand span{color:var(--ac)}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
+button,label.btn,select{font:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--fg);cursor:pointer}
+label.btn{background:var(--ac);color:#fff;border-color:var(--ac)}
+#name{flex:1;min-width:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--mut);font-size:12px}
+main{max-width:760px;margin:0 auto;padding:18px 16px 60px}main.wide{max-width:1100px}
+#paste{display:none;margin:0 auto;max-width:760px;padding:12px 16px 0}
+#paste textarea{width:100%;height:160px;padding:10px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--fg);font:13px/1.5 ui-monospace,monospace}
+#empty{text-align:center;color:var(--mut);padding:50px 10px}
+#out{overflow-wrap:anywhere}
+#out h1,#out h2{border-bottom:1px solid var(--bd);padding-bottom:.25em}
+#out h1{font-size:1.8em}#out h2{font-size:1.4em}#out h3{font-size:1.15em}
+#out a{color:var(--ac)}
+#out code{background:var(--code);padding:.15em .35em;border-radius:5px;font:.9em ui-monospace,monospace}
+#out pre{background:var(--code);padding:12px;border-radius:8px;overflow-x:auto}
+#out pre code{padding:0;background:none}
+#out blockquote{margin:1em 0;padding:.1em 1em;border-left:4px solid var(--bd);color:var(--mut)}
+#out hr{border:0;border-top:1px solid var(--bd);margin:1.5em 0}
+#out img{max-width:100%;height:auto;border-radius:6px}
+#out .att{background:var(--code);padding:.1em .5em;border-radius:6px}
+#out .tw{overflow:auto;max-height:75vh}
+#out table{border-collapse:collapse;margin:1em 0;font-size:.95em}
+#out th,#out td{border:1px solid var(--bd);padding:6px 10px;text-align:left;vertical-align:top}
+#out th{background:var(--code);position:sticky;top:0}
+#out li{margin:.2em 0}#out li.t{list-style:none;margin-left:-1.2em}
+#tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}
+#tools input{flex:1;min-width:120px;padding:7px 10px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--fg);font:inherit;font-size:14px}
+#tools .m{color:var(--mut);font-size:12px}
+.jt{font:13px/1.55 ui-monospace,monospace}.jt .in{margin-left:1.1em;border-left:1px dotted var(--bd);padding-left:.7em}
+.jt summary{cursor:pointer}.jt .k{color:var(--ac)}.jt .s{color:var(--s)}.jt .n{color:var(--n)}.jt .b{color:var(--b)}.jt .z{color:var(--mut)}.jt .m{color:var(--mut);font-size:11px}
+#frw{display:none}
+#hbar{padding:6px 12px;display:flex;gap:6px;align-items:center;border-bottom:1px solid var(--bd)}
+#fr{display:block;width:100%;border:0;background:#fff}
+#src{display:none;margin:0;padding:12px;overflow:auto;font:12px/1.5 ui-monospace,monospace;background:var(--code)}
+</style>
+</head>
+<body>
+<header>
+<div class="brand">HIKARI <span>./VIEWER</span></div>
+<div class="row">
+<label class="btn" for="f">Buka file</label>
+<input id="f" type="file" multiple hidden>
+<label class="btn" for="fd">Folder</label>
+<input id="fd" type="file" webkitdirectory multiple hidden>
+<button data-a="paste">Tempel</button>
+<select id="sel" hidden></select>
+<button id="th" data-a="theme">◐ Auto</button>
+<button data-a="f-">A−</button><button data-a="f+">A+</button>
+<span id="name"></span>
+</div>
+</header>
+<div id="paste"><div class="row"><select id="pt"><option value="md">Markdown</option><option value="csv">CSV</option><option value="json">JSON</option><option value="html">HTML</option></select></div><textarea id="ta" placeholder="Tempel teks di sini"></textarea></div>
+<main>
+<div id="empty">Tekan <b>Buka file</b> dan pilih file <b>.md .csv .json .html</b>.<br>Untuk lampiran (gambar, css, js), pilih bersamaan dalam satu kali pilih.<br>Semua dibaca lokal di browser dan tidak diunggah.</div>
+<div id="tools"></div>
+<article id="out"></article>
+</main>
+<div id="frw"><div id="hbar"><button data-a="src">Lihat kode</button><span class="m" style="color:var(--mut);font-size:12px">Dijalankan di sandbox</span></div><iframe id="fr" sandbox="allow-scripts allow-forms allow-popups allow-modals"></iframe><pre id="src"></pre></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const EXT={md:'md',markdown:'md',txt:'md',csv:'csv',tsv:'csv',json:'json',html:'html',htm:'html'};
+const ext=n=>(n.split('.').pop()||'').toLowerCase();
+const base=p=>{let s=String(p).split(/[?#]/)[0];try{s=decodeURIComponent(s)}catch(e){}return s.split(/[\\/]/).pop().toLowerCase()};
+let docs=[],att=Object.create(null),cur=null,fs=16;
+const rd=(f,u)=>new Promise(r=>{const x=new FileReader();x.onload=()=>r(String(x.result));u?x.readAsDataURL(f):x.readAsText(f)});
+async function load(files){
+  docs=[];att=Object.create(null);
+  for(const f of files){
+    const e=ext(f.name),n=f.name.toLowerCase();
+    if(EXT[e])docs.push({name:f.name,type:EXT[e],text:await rd(f)});
+    else if(/^(png|jpe?g|gif|webp|svg|bmp|avif)$/.test(e))att[n]=await rd(f,1);
+    else if(e==='css'||e==='js')att[n]=await rd(f);
+    else att[n]='';
+  }
+  const s=$('#sel');
+  s.innerHTML=docs.map((d,i)=>'<option value="'+i+'">'+esc(d.name)+'</option>').join('');
+  s.hidden=docs.length<2;
+  if(docs.length)show(docs[0]);else{$('#name').textContent='Tidak ada file yang didukung'}
+}
+/* markdown */
+function img(u,alt){
+  if(/^data:image\//i.test(u))return '<img src="'+u+'" alt="'+alt+'">';
+  if(/^https?:/i.test(u))return '<img src="'+u.replace(/"/g,'%22')+'" alt="'+alt+'" loading="lazy" referrerpolicy="no-referrer">';
+  const n=base(u),a=att[n];
+  return a&&a.startsWith('data:')?'<img src="'+a+'" alt="'+alt+'">':'<em>[lampiran tidak ditemukan: '+n+', pilih bersama file .md]</em>';
+}
+function inline(t){
+  const codes=[],st=[];
+  t=t.replace(/`([^`]+)`/g,(m,c)=>{codes.push(c);return '\u0000'+(codes.length-1)+'\u0000'});
+  t=esc(t);
+  const S=h=>{st.push(h);return '\u0001'+(st.length-1)+'\u0001'};
+  t=t.replace(/!\[\[([^\]|]+)(?:\|[^\]]*)?\]\]/g,(m,n)=>S(img(n,'')));
+  t=t.replace(/!\[([^\]]*)\]\(([^)]+?)(?:\s+"[^"]*")?\)/g,(m,a,u)=>S(img(u.trim().replace(/^&lt;|&gt;$/g,''),a)));
+  t=t.replace(/\[([^\]]+)\]\(([^)]+?)(?:\s+"[^"]*")?\)/g,(m,a,u)=>{
+    u=u.trim().replace(/^&lt;|&gt;$/g,'');
+    if(/^(https?:|mailto:|#)/i.test(u))return S('<a href="'+u.replace(/"/g,'%22')+'" target="_blank" rel="noopener">'+a+'</a>');
+    return base(u) in att?S('<span class="att">\uD83D\uDCCE '+a+'</span>'):a;
+  });
+  t=t.replace(/\*\*([^*]+)\*\*|__([^_]+)__/g,(m,a,b)=>'<strong>'+(a||b)+'</strong>');
+  t=t.replace(/(^|[^*])\*([^*\s][^*]*)\*/g,'$1<em>$2</em>');
+  t=t.replace(/~~([^~]+)~~/g,'<del>$1</del>');
+  t=t.replace(/\u0001(\d+)\u0001/g,(m,i)=>st[i]);
+  return t.replace(/\u0000(\d+)\u0000/g,(m,i)=>'<code>'+esc(codes[i])+'</code>');
+}
+const cells=r=>r.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(c=>c.trim());
+const LI=/^(\s*)([-*+]|\d+[.)])\s+(.*)$/;
+const START=l=>/^\s*(```|~~~|#{1,6}\s|>)/.test(l)||LI.test(l)||/^\s*([-*_])(\s*\1){2,}\s*$/.test(l);
+function md(src){
+  const L=src.replace(/^\uFEFF/,'').replace(/\r\n?/g,'\n').split('\n'),o=[];let i=0,m;
+  while(i<L.length){
+    const l=L[i];
+    if(m=l.match(/^\s*(```|~~~)/)){const f=m[1],b=[];i++;while(i<L.length&&!L[i].trim().startsWith(f)){b.push(L[i]);i++}i++;o.push('<pre><code>'+esc(b.join('\n'))+'</code></pre>');continue}
+    if(!l.trim()){i++;continue}
+    if(m=l.match(/^(#{1,6})\s+(.*?)\s*#*\s*$/)){o.push('<h'+m[1].length+'>'+inline(m[2])+'</h'+m[1].length+'>');i++;continue}
+    if(/^\s*([-*_])(\s*\1){2,}\s*$/.test(l)){o.push('<hr>');i++;continue}
+    if(/^\s*>/.test(l)){const b=[];while(i<L.length&&/^\s*>/.test(L[i])){b.push(L[i].replace(/^\s*> ?/,''));i++}o.push('<blockquote>'+md(b.join('\n'))+'</blockquote>');continue}
+    if(l.includes('|')&&i+1<L.length&&/^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?\s*$/.test(L[i+1])){
+      const h=cells(l),rows=[];i+=2;
+      while(i<L.length&&L[i].trim()&&L[i].includes('|')){rows.push(cells(L[i]));i++}
+      o.push('<div class="tw"><table><thead><tr>'+h.map(c=>'<th>'+inline(c)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(c=>'<td>'+inline(c)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>');continue;
+    }
+    if(m=l.match(LI)){
+      const bs=m[1].length,tag=/\d/.test(m[2])?'ol':'ul',items=[];
+      while(i<L.length){
+        const x=L[i],mm=x.match(LI);
+        if(mm&&mm[1].length<=bs){if(mm[1].length<bs)break;items.push([mm[3]]);i++}
+        else if(!x.trim()){const n=L[i+1]&&L[i+1].match(LI);if(n&&n[1].length>=bs)i++;else break}
+        else if(items.length&&/^\s/.test(x)){items[items.length-1].push(x.slice(Math.min(x.match(/^\s*/)[0].length,bs+2)));i++}
+        else break;
+      }
+      o.push('<'+tag+'>'+items.map(it=>{
+        let f=it[0],c='';const rest=it.slice(1).join('\n'),t=f.match(/^\[([ xX])\]\s+(.*)/);
+        if(t){f=(t[1]===' '?'\u2610 ':'\u2611 ')+t[2];c=' class="t"'}
+        return '<li'+c+'>'+inline(f)+(rest.trim()?md(rest):'')+'</li>';
+      }).join('')+'</'+tag+'>');continue;
+    }
+    const p=[l];i++;
+    while(i<L.length&&L[i].trim()&&!START(L[i])){p.push(L[i]);i++}
+    o.push('<p>'+p.map(s=>inline(s.replace(/\s+$/,''))+(/ {2,}$/.test(s)?'<br>':'')).join(' ')+'</p>');
+  }
+  return o.join('\n');
+}
+/* csv */
+function parseCSV(t){
+  t=t.replace(/^\uFEFF/,'');
+  const first=t.split('\n')[0],d=[',',';','\t','|'].map(c=>[c,first.split(c).length]).sort((a,b)=>b[1]-a[1])[0][0];
+  const rows=[];let r=[],c='',q=false;
+  for(let i=0;i<t.length;i++){
+    const ch=t[i];
+    if(q){if(ch==='"'){if(t[i+1]==='"'){c+='"';i++}else q=false}else c+=ch}
+    else if(ch==='"')q=true;
+    else if(ch===d){r.push(c);c=''}
+    else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&t[i+1]==='\n')i++;r.push(c);rows.push(r);r=[];c=''}
+    else c+=ch;
+  }
+  if(c!==''||r.length){r.push(c);rows.push(r)}
+  return rows.filter(r=>r.some(x=>x!==''));
+}
+function csv(d){
+  const rows=parseCSV(d.text),MAX=3000;
+  if(!rows.length){$('#out').innerHTML='<p>CSV kosong.</p>';return}
+  const h=rows[0],b=rows.slice(1,MAX+1);
+  $('#tools').innerHTML='<input id="flt" placeholder="Cari di tabel"><span class="m">'+(rows.length-1)+' baris × '+h.length+' kolom'+(rows.length-1>MAX?' (tampil '+MAX+' pertama)':'')+'</span>';
+  $('#out').innerHTML='<div class="tw"><table><thead><tr>'+h.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr></thead><tbody>'+b.map(r=>'<tr>'+h.map((_,i)=>'<td>'+esc(r[i]||'')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
+}
+/* json */
+function jt(v,k,dp){
+  const key=k!==undefined?'<span class="k">'+esc(String(k))+'</span>: ':'';
+  if(v===null)return '<div>'+key+'<span class="z">null</span></div>';
+  if(typeof v==='object'){
+    const a=Array.isArray(v),ks=Object.keys(v),br=a?'[]':'{}';
+    if(!ks.length)return '<div>'+key+br+'</div>';
+    return '<details'+(dp<2?' open':'')+'><summary>'+key+br[0]+' <span class="m">'+ks.length+(a?' item':' key')+'</span></summary><div class="in">'+ks.map(x=>jt(v[x],x,dp+1)).join('')+'</div>'+br[1]+'</details>';
+  }
+  const c=typeof v==='string'?'s':typeof v==='number'?'n':'b';
+  return '<div>'+key+'<span class="'+c+'">'+esc(typeof v==='string'?JSON.stringify(v):String(v))+'</span></div>';
+}
+function json(d){
+  $('#tools').innerHTML='<button data-a="jo">Buka semua</button><button data-a="jc">Tutup semua</button>';
+  try{$('#out').innerHTML='<div class="jt">'+jt(JSON.parse(d.text.replace(/^\uFEFF/,'')),undefined,0)+'</div>'}
+  catch(e){$('#out').innerHTML='<p><b>JSON tidak valid:</b> '+esc(e.message)+'</p><pre><code>'+esc(d.text)+'</code></pre>'}
+}
+/* html */
+function buildHTML(t){
+  const doc=new DOMParser().parseFromString(t,'text/html');
+  doc.querySelectorAll('img[src],source[src]').forEach(e=>{const a=att[base(e.getAttribute('src'))];if(a&&a.startsWith('data:'))e.setAttribute('src',a)});
+  doc.querySelectorAll('link[rel~="stylesheet"][href]').forEach(e=>{const a=att[base(e.getAttribute('href'))];if(a!==undefined&&!a.startsWith('data:')){const s=doc.createElement('style');s.textContent=a;e.replaceWith(s)}});
+  doc.querySelectorAll('script[src]').forEach(e=>{const a=att[base(e.getAttribute('src'))];if(a!==undefined&&!a.startsWith('data:')){const s=doc.createElement('script');s.textContent=a;e.replaceWith(s)}});
+  return '<!DOCTYPE html>'+doc.documentElement.outerHTML;
+}
+function sizeFr(){const h=innerHeight-$('header').offsetHeight-$('#hbar').offsetHeight-(parseInt(getComputedStyle(document.documentElement).paddingTop)||0);$('#fr').style.height=Math.max(300,h)+'px'}
+function html(d){
+  $('main').style.display='none';$('#frw').style.display='block';
+  $('#fr').style.display='block';$('#src').style.display='none';
+  $('#fr').srcdoc=buildHTML(d.text);$('#src').textContent=d.text;sizeFr();
+}
+/* shell */
+function show(d){
+  cur=d;
+  const m=$('main');
+  $('#frw').style.display='none';m.style.display='';
+  $('#empty').style.display='none';$('#tools').innerHTML='';
+  m.className=d.type==='md'?'':'wide';
+  if(d.type==='md')$('#out').innerHTML=md(d.text);
+  else if(d.type==='csv')csv(d);
+  else if(d.type==='json')json(d);
+  else html(d);
+  $('#name').textContent=d.name;scrollTo(0,0);
+}
+const R=document.documentElement;let th='auto';
+try{th=localStorage.getItem('hv-th')||'auto'}catch(e){}
+function applyTh(){
+  if(th==='auto')R.removeAttribute('data-theme');else R.setAttribute('data-theme',th);
+  $('#th').textContent={auto:'◐ Auto',light:'☀ Terang',dark:'☾ Gelap'}[th];
+  try{localStorage.setItem('hv-th',th)}catch(e){}
+}
+applyTh();
+document.addEventListener('click',e=>{
+  const a=e.target.closest('[data-a]');if(!a)return;
+  const k=a.dataset.a;
+  if(k==='theme'){th={auto:'light',light:'dark',dark:'auto'}[th];applyTh()}
+  else if(k==='paste'){const p=$('#paste');p.style.display=p.style.display==='block'?'none':'block'}
+  else if(k==='f-'||k==='f+'){fs=Math.max(12,Math.min(26,fs+(k==='f+'?1:-1)));document.body.style.fontSize=fs+'px'}
+  else if(k==='jo'||k==='jc')document.querySelectorAll('.jt details').forEach(x=>x.open=k==='jo');
+  else if(k==='src'){const s=$('#src'),f=$('#fr'),on=s.style.display==='block';s.style.display=on?'none':'block';f.style.display=on?'block':'none';a.textContent=on?'Lihat kode':'Lihat tampilan'}
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='flt'){const q=e.target.value.toLowerCase();document.querySelectorAll('#out tbody tr').forEach(r=>r.style.display=r.textContent.toLowerCase().includes(q)?'':'none')}
+  if(e.target.id==='ta'||e.target.id==='pt'){const t=$('#ta').value;if(t.trim())show({name:'(teks tempelan)',type:$('#pt').value,text:t})}
+});
+$('#pt').addEventListener('change',()=>{const t=$('#ta').value;if(t.trim())show({name:'(teks tempelan)',type:$('#pt').value,text:t})});
+$('#sel').addEventListener('change',e=>show(docs[+e.target.value]));
+['#f','#fd'].forEach(s=>$(s).addEventListener('change',e=>{const fl=[...e.target.files];e.target.value='';if(fl.length)load(fl)}));
+addEventListener('dragover',e=>e.preventDefault());
+addEventListener('drop',e=>{e.preventDefault();const fl=[...e.dataTransfer.files];if(fl.length)load(fl)});
+addEventListener('resize',()=>{if(cur&&cur.type==='html')sizeFr()});
+</script>
+</body>
+</html>
